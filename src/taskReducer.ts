@@ -8,11 +8,13 @@ export type Task = { id: string; title: string; status: Status }
 export type State = {
   tasks: Task[]
   filter: Filter
+  past: Task[][]
 }
 
 export const initialState: State = {
   tasks: [],
   filter: 'all',
+  past: []
 }
 
 export type Action =
@@ -21,6 +23,7 @@ export type Action =
   | { type: 'remove'; id: string }
   | { type: 'setFilter'; filter: Filter}
   | { type: 'clearDone'}
+  | { type: 'undo'}
 
 const NEXT: Record<Status, Status> = {
   todo: 'in-progress',
@@ -35,19 +38,26 @@ export function taskReducer(state: State, action: Action): State {
     case 'add':
       return{ 
         ...state, 
-        tasks: [...tasks, { id: action.id, title: action.title, status: 'todo' }]
+        tasks: [...tasks, { id: action.id, title: action.title, status: 'todo' }],
+        past: [...state.past, tasks]
       }
 
     case 'advance':
+      if(!tasks.some((t) => t.id === action.id)) 
+        return state
       return{
         ...state,
-        tasks: tasks.map((t) => t.id === action.id ? { ...t, status: NEXT[t.status] } : t,)
+        tasks: tasks.map((t) => t.id === action.id ? { ...t, status: NEXT[t.status] } : t,),
+        past: [...state.past, tasks]
       }
 
     case 'remove':
+      if (!tasks.some((t) => t.id === action.id)) 
+        return state
       return {
         ...state,
-        tasks: tasks.filter((t) => t.id !== action.id)
+        tasks: tasks.filter((t) => t.id !== action.id),
+        past: [...state.past, tasks],
       }
 
     case 'setFilter':
@@ -57,9 +67,23 @@ export function taskReducer(state: State, action: Action): State {
       }
 
     case 'clearDone':
+      if (!tasks.some((t) => t.status === 'done')) 
+        return state
       return {
         ...state,
-        tasks: tasks.filter((t) => t.status !== 'done')
+        tasks: tasks.filter((t) => t.status !== 'done'),
+        past: [...state.past, tasks]
+      }
+
+    case 'undo':
+      const previousTasks = state.past.at(-1)
+
+      if (previousTasks === undefined) 
+        return state
+      return {
+        ...state,
+        tasks: [...previousTasks],
+        past: state.past.slice(0, -1),
       }
 
     default: 

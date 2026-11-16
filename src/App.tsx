@@ -66,21 +66,14 @@ export default function App() {
             style={{
               backgroundColor: state.filter === filter ? '#2459ac' : 'white',
               color: state.filter === filter ? 'white' : 'black',
-            }}
-          >
+            }}>
             {FILTER_NAMES[filter]} ({counts[filter]})
           </button>
         ))}
       </div>
 
-      <button
-        type="button"
-        disabled={counts.done === 0}
-        onClick={() => dispatch({ type: 'clearDone' })}
-      >
-        Clear done
-      </button>
-
+      <button type="button" disabled={counts.done === 0} onClick={() => dispatch({ type: 'clearDone' })}>Clear done</button>
+      <button type="button" disabled={state.past.length === 0} onClick={() => dispatch({ type: 'undo' })}>Undo</button>
       <TaskList tasks={visibleTasks} dispatch={dispatch} />
     </main>
   )
