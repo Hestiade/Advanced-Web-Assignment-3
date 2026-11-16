@@ -64,13 +64,57 @@ The visible list and filter counts are calculated during rendering using `filter
 
 Task IDs are generated in the form handler with `crypto.randomUUID()` and passed to the reducer in the add action.
 
-## Tests
-
-The current tests in `src/filter.test.ts` check filtering by each status, handling empty lists, preserving the original tasks, and calculating counts.
-
 ## Bonus 1: Undo
 
 My reducer state contains tasks, filter, and past, where past stores previous task lists. Actions that change tasks save the old list, while changing the filter does not add a history entry. Undo restores the most recent task list without changing the selected filter, and the button is disabled when the history is empty.
+
+## Bonus 2: Tests
+
+I used Vitest to test every reducer action, the three-step status cycle, and undo operations. The tests also check that the reducer does not mutate the previous state and that filter changes are not added to the undo history.
+
+Tests for `filterTasks` and `countByFilter` cover each filter, empty lists, and task counts. Additional edge cases include unknown IDs, clearing when no tasks are done, and counts after deleting a task.
+
+Run the tests with:
+
+```sh
+npm test
+```
+
+The test output was:
+
+```sh
+C:\Users\irem\Desktop\OKUL\Advanced Web Programming\Assignment_3\assignment3>npm test
+
+> task-manager-assignment3@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 C:/Users/irem/Desktop/OKUL/Advanced Web Programming/Assignment_3/assignment3
+
+
+ ❯ src/taskReducer.test.ts [queued]
+ ✓ src/filter.test.ts (12 tests) 6ms
+ ✓ src/taskReducer.test.ts (24 tests) 9ms
+
+ Test Files  2 passed (2)
+      Tests  36 passed (36)
+   Start at  11:53:51
+   Duration  639ms (transform 35%, import 30%, worker 28%, tests 6%)
+
+
+C:\Users\irem\Desktop\OKUL\Advanced Web Programming\Assignment_3\assignment3>npm run build
+
+> task-manager-assignment3@0.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.8 building client environment for production...
+✓ 18 modules transformed.
+computing gzip size...
+dist/index.html                  0.32 kB │ gzip:  0.23 kB
+dist/assets/index-BpmzWYB9.js  222.11 kB │ gzip: 69.54 kB
+
+✓ built in 254ms
+```
 
 ## Limitations
 
