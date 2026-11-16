@@ -1,9 +1,17 @@
 // STARTING POINT: the sample Task Manager (state in App with useReducer, passed down as props).
 // Assignment 3: change the state shape, add actions, add a filter bar (see the handout).
 import { useReducer } from 'react'
-import { taskReducer, type Task, type Action } from './taskReducer'
+import { initialState, taskReducer, type Action, type Task } from './taskReducer'
+import { FILTERS, countByFilter, filterTasks, type Filter } from './filter'
 import TaskRow from './TaskRow'
 import type { Dispatch } from 'react'
+
+const FILTER_NAMES: Record<Filter, string> = {
+  all: 'All',
+  todo: 'To do',
+  'in-progress': 'In progress',
+  done: 'Done',
+}
 
 function AddForm({ dispatch }: { dispatch: Dispatch<Action> }) {
   function addTask(formData: FormData) {
@@ -19,6 +27,10 @@ function AddForm({ dispatch }: { dispatch: Dispatch<Action> }) {
 }
 
 function TaskList({ tasks, dispatch }: { tasks: Task[]; dispatch: Dispatch<Action> }) {
+  if (tasks.length === 0) {
+  return <p>There is no tasks.</p>
+  }
+
   return (
     <ul>
       {tasks.map((t) => (
@@ -34,12 +46,42 @@ function TaskList({ tasks, dispatch }: { tasks: Task[]; dispatch: Dispatch<Actio
 }
 
 export default function App() {
-  const [tasks, dispatch] = useReducer(taskReducer, [])
+  const [state, dispatch] = useReducer(taskReducer, initialState)
+
+  const visibleTasks = filterTasks(state.tasks, state.filter)
+  const counts = countByFilter(state.tasks)
+
   return (
     <main>
       <h1>Task Manager</h1>
       <AddForm dispatch={dispatch} />
-      <TaskList tasks={tasks} dispatch={dispatch} />
+
+      <div>
+        {FILTERS.map((filter) => (
+          <button
+            key={filter}
+            type="button"
+            aria-pressed={state.filter === filter}
+            onClick={() => dispatch({ type: 'setFilter', filter })}
+            style={{
+              backgroundColor: state.filter === filter ? '#2459ac' : 'white',
+              color: state.filter === filter ? 'white' : 'black',
+            }}
+          >
+            {FILTER_NAMES[filter]} ({counts[filter]})
+          </button>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        disabled={counts.done === 0}
+        onClick={() => dispatch({ type: 'clearDone' })}
+      >
+        Clear done
+      </button>
+
+      <TaskList tasks={visibleTasks} dispatch={dispatch} />
     </main>
   )
 }
