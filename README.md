@@ -115,6 +115,15 @@ dist/assets/index-BpmzWYB9.js  222.11 kB │ gzip: 69.54 kB
 
 ✓ built in 254ms
 ```
+## Bonus 3: Explain your reducer
+
+A reducer must be pure: the same state and action should produce the same result without changing existing data. React can skip rendering when the returned state has the same reference as before, so mutating an array and returning the original state can leave the screen outdated. Mutation also breaks undo history because an earlier snapshot may share the objects being changed. I use spread syntax, map, and filter to create replacements while preserving previous values.
+
+The caller creates the task ID with crypto.randomUUID() and includes it in the add action. Generating an ID inside the reducer would make identical inputs produce different tasks. Keeping ID generation in the form handler makes the reducer predictable and allows tests to provide fixed IDs. It also keeps repeated reducer calls in development from generating different results.
+
+The visible list and counts are derived from tasks and the selected filter during rendering. Storing separate copies would create several values that must stay synchronized. For example, deleting a completed task could update tasks but leave a separately stored Done count unchanged. Deriving both values from the current tasks avoids this inconsistency.
+
+Compared with a separate useState for the filter, putting it in the reducer state makes related behavior easier to test together. I can check that clearDone and undo preserve the selected filter using only reducer calls. The tradeoff is a larger state object and more action cases. Adding undo also requires distinguishing changes to tasks from filter changes, because only task changes belong in the history.
 
 ## Limitations
 
