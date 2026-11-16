@@ -47,7 +47,7 @@ npm test
 - The All, To do, In progress, and Done buttons filter the visible tasks.
 - Each filter button displays its task count, and the active filter has a different appearance.
 - Clear done removes all completed tasks while keeping the selected filter.
-- An empty filtered list displays “No tasks here.”
+- An empty filtered list displays “There is no tasks.”
 - Undo restores the previous task list.
 
 ## State and Components
