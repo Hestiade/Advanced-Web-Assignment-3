@@ -64,6 +64,19 @@ The visible list and filter counts are calculated during rendering using `filter
 
 Task IDs are generated in the form handler with `crypto.randomUUID()` and passed to the reducer in the add action.
 
+## Limitations
+
+- Tasks and undo history are lost when the page reloads.
+- Task titles cannot be edited after creation.
+- Undo is supported, but redo is not.
+
+## Screenshots
+
+- [All](screenshots/filter_all.png)
+- [To do](screenshots/filter_todo.png)
+- [In progress](screenshots/filter_inprogress.png)
+- [Done](screenshots/filter_done.png)
+
 ## Bonus 1: Undo
 
 My reducer state contains tasks, filter, and past, where past stores previous task lists. Actions that change tasks save the old list, while changing the filter does not add a history entry. Undo restores the most recent task list without changing the selected filter, and the button is disabled when the history is empty.
@@ -125,8 +138,8 @@ The visible list and counts are derived from tasks and the selected filter durin
 
 Compared with a separate useState for the filter, putting it in the reducer state makes related behavior easier to test together. I can check that clearDone and undo preserve the selected filter using only reducer calls. The tradeoff is a larger state object and more action cases. Adding undo also requires distinguishing changes to tasks from filter changes, because only task changes belong in the history.
 
-## Limitations
+## Bonus 4: Git repository
 
-- Tasks and undo history are lost when the page reloads.
-- Task titles cannot be edited after creation.
-- Undo is supported, but redo is not.
+https://github.com/Hestiade/assignment3
+
+
